@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { CustomerInfo } from './pages/CustomerInfo'
 import Main from './pages/Main'
@@ -11,6 +11,15 @@ function AppContent() {
   const [customerData, setCustomerData] = useState(null);
   const [currentView, setCurrentView] = useState('main'); // 'main' or 'list'
   const { language } = useLanguage();
+  const isRtl = language === 'ar';
+
+  // Set document direction when language changes
+  useEffect(() => {
+    document.dir = isRtl ? 'rtl' : 'ltr';
+    document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', language);
+    document.body.style.direction = isRtl ? 'rtl' : 'ltr';
+  }, [isRtl, language]);
 
   const handleDataFetched = (data) => {
     setCustomerData(data);
@@ -26,10 +35,12 @@ function AppContent() {
     <Box 
       className="App"
       sx={{
-        direction: language === 'ar' ? 'rtl' : 'ltr',
+        direction: isRtl ? 'rtl' : 'ltr',
         minHeight: '100vh',
         transition: 'direction 0.3s ease-in-out',
+        width: '100%',
       }}
+      dir={isRtl ? 'rtl' : 'ltr'}
     >
       {currentView === 'main' ? (
         <Main onDataFetched={handleDataFetched} />

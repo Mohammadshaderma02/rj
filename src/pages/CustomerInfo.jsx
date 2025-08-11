@@ -97,6 +97,7 @@ export const CustomerInfo = ({ data, onBack }) => {
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [pdfError, setPdfError] = useState(null);
+  const isRtl = language === 'ar';
 
   const handleDownloadPDF = async () => {
     setDownloadingPdf(true);
@@ -120,7 +121,7 @@ export const CustomerInfo = ({ data, onBack }) => {
         height: "100vh",
         display: "flex",
         flexDirection: "column",
-        direction: language === 'ar' ? 'rtl' : 'ltr',
+        direction: isRtl ? 'rtl' : 'ltr',
         overflow: "hidden",
       }}
     >
@@ -131,6 +132,7 @@ export const CustomerInfo = ({ data, onBack }) => {
           backgroundColor: "transparent",
           padding: isMobile ? "16px" : "20px",
           paddingBottom: "10px",
+          direction: isRtl ? 'rtl' : 'ltr',
         }}
       >
         <Container
@@ -139,12 +141,14 @@ export const CustomerInfo = ({ data, onBack }) => {
             display: "flex",
             justifyContent: "center",
             padding: 0,
+            direction: isRtl ? 'rtl' : 'ltr',
           }}
         >
           <Box
             sx={{
               width: containerWidth,
               maxWidth: "100%",
+              direction: isRtl ? 'rtl' : 'ltr',
             }}
           >
             {/* Header */}
@@ -155,13 +159,15 @@ export const CustomerInfo = ({ data, onBack }) => {
               sx={{
                 width: "100%",
                 mb: "20px",
+                direction: isRtl ? 'rtl' : 'ltr',
               }}
             >
               {/* Logo Section */}
               <Box sx={{ 
                 position: "relative", 
                 width: isMobile ? "120px" : "133.33px", 
-                height: "35px" 
+                height: "35px",
+                order: isRtl ? 2 : 1,
               }}>
                 <Box
                   component="img"
@@ -172,7 +178,7 @@ export const CustomerInfo = ({ data, onBack }) => {
                     height: "33px",
                     position: "absolute",
                     top: 0,
-                    [language === 'ar' ? 'right' : 'left']: language === 'ar' ? 
+                    [isRtl ? 'right' : 'left']: isRtl ? 
                       (isMobile ? "20px" : "30px") : 
                       (isMobile ? "10px" : "40px"),
                   }}
@@ -192,6 +198,7 @@ export const CustomerInfo = ({ data, onBack }) => {
                   py: "5px",
                   minWidth: "auto",
                   fontSize: isMobile ? "11px" : "13px",
+                  order: isRtl ? 1 : 2,
                   "&:hover": {
                     backgroundColor: "#1c3781",
                   },
@@ -203,6 +210,7 @@ export const CustomerInfo = ({ data, onBack }) => {
                     fontWeight: "bold",
                     color: "white",
                     fontSize: isMobile ? "11px" : "13px",
+                    direction: isRtl ? 'rtl' : 'ltr',
                   }}
                 >
                   {getTranslation('languageButton', language)}
@@ -216,8 +224,7 @@ export const CustomerInfo = ({ data, onBack }) => {
                 backgroundColor: "#1c3781",
                 borderRadius: "8px",
                 padding: isMobile ? "16px" : "18px 16px 20px 22px",
-                        direction: language === 'ar' ? 'rtl' : 'ltr',
-
+                direction: isRtl ? 'rtl' : 'ltr',
               }}
             >
               <Typography
@@ -228,7 +235,8 @@ export const CustomerInfo = ({ data, onBack }) => {
                   color: "white",
                   letterSpacing: 0,
                   lineHeight: "normal",
-                  textAlign: language === 'ar' ? 'right' : 'left',
+                  textAlign: isRtl ? 'right' : 'left',
+                  direction: isRtl ? 'rtl' : 'ltr',
                 }}
               >
                 {getTranslation('registeredNumbers', language)}
@@ -246,6 +254,7 @@ export const CustomerInfo = ({ data, onBack }) => {
           display: "flex",
           justifyContent: "center",
           padding: isMobile ? "10px 16px" : "10px 20px",
+          direction: isRtl ? 'rtl' : 'ltr',
         }}
       >
         <Box
@@ -255,6 +264,7 @@ export const CustomerInfo = ({ data, onBack }) => {
             display: "flex",
             flexDirection: "column",
             height: "100%",
+            direction: isRtl ? 'rtl' : 'ltr',
           }}
         >
           {/* PDF Error - Above the list */}
@@ -263,8 +273,8 @@ export const CustomerInfo = ({ data, onBack }) => {
               severity="error" 
               sx={{ 
                 mb: 2,
-                textAlign: language === 'ar' ? 'right' : 'left',
-                direction: language === 'ar' ? 'rtl' : 'ltr',
+                textAlign: isRtl ? 'right' : 'left',
+                direction: isRtl ? 'rtl' : 'ltr',
                 flexShrink: 0,
               }}
             >
@@ -279,8 +289,9 @@ export const CustomerInfo = ({ data, onBack }) => {
               flex: 1,
               overflowY: "auto",
               overflowX: "hidden",
-              paddingRight: language === 'ar' ? "0" : "4px",
-              paddingLeft: language === 'ar' ? "4px" : "0",
+              paddingRight: isRtl ? "0" : "4px",
+              paddingLeft: isRtl ? "4px" : "0",
+              direction: isRtl ? 'rtl' : 'ltr',
               '&::-webkit-scrollbar': {
                 width: '6px',
               },
@@ -308,7 +319,6 @@ export const CustomerInfo = ({ data, onBack }) => {
                       borderRadius: "8px",
                       padding: isMobile ? "14px" : "16px 16px 16px 18px",
                       cursor: "pointer",
-                      direction: language === 'ar' ? 'rtl' : 'ltr',
                       transition: "all 0.2s ease-in-out",
                       "&:hover": {
                         boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
@@ -317,20 +327,43 @@ export const CustomerInfo = ({ data, onBack }) => {
                     }}
                   >
                     <CardContent
-                      sx={{ padding: 0, "&:last-child": { paddingBottom: 0 } }}
+                      sx={{ 
+                        padding: 0, 
+                        "&:last-child": { paddingBottom: 0 },
+                      }}
                     >
+                      {/* Fixed layout: Icon LEFT, Text RIGHT - regardless of language */}
                       <Stack
                         direction="row"
-                        justifyContent="space-between"
                         alignItems="center"
                         spacing={2}
+                        sx={{ 
+                          width: "100%",
+                        }}
                       >
+                        {/* Avatar/Icon - Always on the LEFT */}
+                        <Avatar
+                          sx={{
+                            width: isMobile ? "44px" : "49px",
+                            height: isMobile ? "44px" : "49px",
+                            backgroundColor: "#3e579c",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                            order: 1, // Always first (left)
+                          }}
+                        >
+                          {getServiceIcon(service, service, language)}
+                        </Avatar>
+
+                        {/* Text Content - Always on the RIGHT */}
                         <Stack 
                           spacing={0.5} 
                           sx={{ 
                             flex: 1,
-                            textAlign: language === 'ar' ? 'right' : 'left',
-
+                           
+                            float: isRtl ? 'right' : 'left',
                           }}
                         >
                           <Typography
@@ -341,8 +374,8 @@ export const CustomerInfo = ({ data, onBack }) => {
                               color: "#000000b2",
                               letterSpacing: 0,
                               lineHeight: "normal",
-                                                                  direction: language === 'ar' ? 'rtl' : 'ltr',
-
+                              direction: isRtl ? 'rtl' : 'ltr',
+                              textAlign: isRtl ? 'right' : 'left',
                             }}
                           >
                             {getMarketTypeDisplay(service, language)}
@@ -356,8 +389,8 @@ export const CustomerInfo = ({ data, onBack }) => {
                               color: "black",
                               letterSpacing: 0,
                               lineHeight: "normal",
-                              direction: 'ltr',
-                              textAlign: language === 'ar' ? 'right' : 'left',
+                              direction: 'ltr', // Always LTR for phone numbers
+                              textAlign: isRtl ? 'right' : 'left',
                             }}
                           >
                             {service.msisdn}
@@ -372,26 +405,14 @@ export const CustomerInfo = ({ data, onBack }) => {
                                 color: "black",
                                 letterSpacing: 0,
                                 lineHeight: "normal",
+                                direction: isRtl ? 'rtl' : 'ltr',
+                                textAlign: isRtl ? 'right' : 'left',
                               }}
                             >
                               {getContractTypeDisplay(service, language)}
                             </Typography>
                           )}
                         </Stack>
-
-                        <Avatar
-                          sx={{
-                            width: isMobile ? "44px" : "49px",
-                            height: isMobile ? "44px" : "49px",
-                            backgroundColor: "#3e579c",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {getServiceIcon(service, service, language)}
-                        </Avatar>
                       </Stack>
                     </CardContent>
                   </Card>
@@ -400,8 +421,8 @@ export const CustomerInfo = ({ data, onBack }) => {
                 <Alert 
                   severity="info" 
                   sx={{ 
-                    textAlign: language === 'ar' ? 'right' : 'left',
-                    direction: language === 'ar' ? 'rtl' : 'ltr',
+                    textAlign: isRtl ? 'right' : 'left',
+                    direction: isRtl ? 'rtl' : 'ltr',
                   }}
                 >
                   {getTranslation('noData', language)}
@@ -416,25 +437,26 @@ export const CustomerInfo = ({ data, onBack }) => {
       <Box
         sx={{
           flexShrink: 0,
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
           backdropFilter: "blur(10px)",
           borderTop: "1px solid rgba(0, 0, 0, 0.1)",
           padding: isMobile ? "16px" : "20px",
           display: "flex",
           justifyContent: "center",
+          direction: isRtl ? 'rtl' : 'ltr',
         }}
       >
         <Box
           sx={{
             width: containerWidth,
             maxWidth: "100%",
+            direction: isRtl ? 'rtl' : 'ltr',
           }}
         >
           <Stack 
             spacing={2}
-            direction={language === 'ar' ? 'row-reverse' : 'row'}
+            direction="row"
             sx={{
-              direction: language === 'ar' ? 'rtl' : 'ltr',
+              direction: isRtl ? 'rtl' : 'ltr',
             }}
           >
             {/* Download PDF Button */}
@@ -454,6 +476,7 @@ export const CustomerInfo = ({ data, onBack }) => {
                 textAlign: "center",
                 gap: "8px",
                 flex: 1,
+                direction: isRtl ? 'rtl' : 'ltr',
                 "&:hover": {
                   backgroundColor: "#b8005f",
                 },
@@ -465,23 +488,27 @@ export const CustomerInfo = ({ data, onBack }) => {
               {downloadingPdf ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
-                <>
+                <Stack 
+                  direction="row" 
+                  alignItems="center" 
+                  spacing={1}
+                  sx={{ direction: isRtl ? 'rtl' : 'ltr' }}
+                >
                   <Typography
                     sx={{
                       fontSize: isMobile ? "15px" : "17px",
                       fontFamily: "'Zain', Arial",
                       fontWeight: "bold",
                       color: "white",
+                      direction: isRtl ? 'rtl' : 'ltr',
                     }}
                   >
                     {getTranslation('downloadPDF', language)}
                   </Typography>
-              <img src={File_save} alt="" srcset="" />
-                </>
+                  <img src={File_save} alt="" srcSet="" />
+                </Stack>
               )}
             </Button>
-
-       
           </Stack>
         </Box>
       </Box>

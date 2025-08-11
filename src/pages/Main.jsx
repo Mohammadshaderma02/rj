@@ -17,6 +17,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { getTranslation } from "../utils/translations";
 import { customerService } from "../services/apiService";
 import ZainLogo from "../assets/White logo.svg"
+import SendIcon from "../assets/send.svg"
 
 const Main = ({ onDataFetched }) => {
   const { language, toggleLanguage } = useLanguage();
@@ -25,6 +26,7 @@ const Main = ({ onDataFetched }) => {
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const isRtl = language === 'ar';
 
   const handleInquire = async () => {
     setLoading(true);
@@ -60,7 +62,7 @@ const Main = ({ onDataFetched }) => {
         alignItems: isMobile ? "flex-start" : "center",
         padding: isMobile ? "16px" : "0",
         background: 'transparent',
-        direction: language === 'ar' ? 'rtl' : 'ltr',
+        direction: isRtl ? 'rtl' : 'ltr',
       }}
     >
       <Box
@@ -69,6 +71,7 @@ const Main = ({ onDataFetched }) => {
           height: containerHeight,
           position: "relative",
           maxWidth: "100%",
+          direction: isRtl ? 'rtl' : 'ltr',
         }}
       >
         {/* Header */}
@@ -82,13 +85,15 @@ const Main = ({ onDataFetched }) => {
             top: isMobile ? "0" : "18px",
             px: isMobile ? "0" : "16px",
             mb: isMobile ? "20px" : "0",
+            direction: isRtl ? 'rtl' : 'ltr',
           }}
         >
           {/* Logo Section */}
           <Box sx={{ 
             position: "relative", 
             width: isMobile ? "120px" : "133.33px", 
-            height: "35px" 
+            height: "35px",
+            order: isRtl ? 2 : 1,
           }}>
             <Box
               component="img"
@@ -99,7 +104,7 @@ const Main = ({ onDataFetched }) => {
                 height: "33px",
                 position: "absolute",
                 top: 0,
-                [language === 'ar' ? 'right' : 'left']: 0,
+                [isRtl ? 'right' : 'left']: 0,
               }}
             />
           </Box>
@@ -108,6 +113,7 @@ const Main = ({ onDataFetched }) => {
           <Button
             variant="contained"
             onClick={toggleLanguage}
+            className="language-button"
             sx={{
               height: "34px",
               backgroundColor: "#20397e",
@@ -117,6 +123,7 @@ const Main = ({ onDataFetched }) => {
               py: "5px",
               minWidth: "auto",
               fontSize: isMobile ? "11px" : "13px",
+              order: isRtl ? 1 : 2,
               "&:hover": {
                 backgroundColor: "#1c3781",
               },
@@ -129,6 +136,7 @@ const Main = ({ onDataFetched }) => {
                 fontWeight: "bold",
                 color: "white",
                 fontSize: isMobile ? "11px" : "13px",
+                direction: isRtl ? 'rtl' : 'ltr',
               }}
             >
               {getTranslation('languageButton', language)}
@@ -144,7 +152,7 @@ const Main = ({ onDataFetched }) => {
             position: "relative",
             top: isMobile ? "0" : "73px",
             px: isMobile ? "0" : "16px",
-            direction: language === 'ar' ? 'rtl' : 'ltr',
+            direction: isRtl ? 'rtl' : 'ltr',
           }}
         >
           {/* Info Card */}
@@ -154,6 +162,7 @@ const Main = ({ onDataFetched }) => {
               borderRadius: "8px",
               px: isMobile ? "20px" : "27px",
               py: isMobile ? "20px" : "25px",
+              direction: isRtl ? 'rtl' : 'ltr',
             }}
           >
             <Typography
@@ -164,9 +173,9 @@ const Main = ({ onDataFetched }) => {
                 fontSize: isMobile ? "16px" : "19px",
                 lineHeight: isMobile ? "24px" : "30px",
                 color: "white",
-                textAlign: language === 'ar' ? 'right' : 'left',
+                textAlign: isRtl ? 'right' : 'left',
                 whiteSpace: 'pre-line',
-                direction: language === 'ar' ? 'rtl' : 'ltr',
+                direction: isRtl ? 'rtl' : 'ltr',
               }}
             >
               {getTranslation('title', language)}
@@ -180,11 +189,11 @@ const Main = ({ onDataFetched }) => {
             <Alert 
               severity="error" 
               sx={{ 
-                direction: language === 'ar' ? 'rtl' : 'ltr',
-                textAlign: language === 'ar' ? 'right' : 'left',
+                direction: isRtl ? 'rtl' : 'ltr',
+                textAlign: isRtl ? 'right' : 'left',
                 '& .MuiAlert-message': {
-                  direction: language === 'ar' ? 'rtl' : 'ltr',
-                  textAlign: language === 'ar' ? 'right' : 'left',
+                  direction: isRtl ? 'rtl' : 'ltr',
+                  textAlign: isRtl ? 'right' : 'left',
                 }
               }}
             >
@@ -206,7 +215,7 @@ const Main = ({ onDataFetched }) => {
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
-              direction: language === 'ar' ? 'rtl' : 'ltr',
+              direction: isRtl ? 'rtl' : 'ltr',
               "&:hover": {
                 backgroundColor: "#b8005f",
               },
@@ -218,7 +227,12 @@ const Main = ({ onDataFetched }) => {
             {loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              <>
+              <Stack 
+                direction="row" 
+                alignItems="center" 
+                spacing={1}
+                sx={{ direction: isRtl ? 'rtl' : 'ltr' }}
+              >
                 <Typography
                   variant="h2"
                   sx={{
@@ -227,17 +241,19 @@ const Main = ({ onDataFetched }) => {
                     fontSize: isMobile ? "16px" : "18px",
                     color: "white",
                     textAlign: "center",
+                    direction: isRtl ? 'rtl' : 'ltr',
                   }}
                 >
                   {getTranslation('inquireButton', language)}
                 </Typography>
-                <Send sx={{ 
+                <img src={SendIcon} alt="" srcset="" style={{ transform: !isRtl ? 'scaleX(-1)' : 'none'}}/>
+                {/* <Send sx={{ 
                   width: "24px", 
                   height: "24px", 
                   color: "white",
-                  transform: language === 'ar' ? 'scaleX(-1)' : 'none',
-                }} />
-              </>
+                  transform: isRtl ? 'scaleX(-1)' : 'none',
+                }} /> */}
+              </Stack>
             )}
           </Button>
 
@@ -249,9 +265,9 @@ const Main = ({ onDataFetched }) => {
               fontWeight: "normal",
               fontSize: isMobile ? "16px" : "19px",
               color: "white",
-              textAlign: language === 'ar' ? 'right' : 'left',
+              textAlign: isRtl ? 'right' : 'left',
               px: isMobile ? "10px" : "0",
-              direction: language === 'ar' ? 'rtl' : 'ltr',
+              direction: isRtl ? 'rtl' : 'ltr',
             }}
           >
             {getTranslation('expireNote', language)}

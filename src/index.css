@@ -26,6 +26,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Set default direction based on lang attribute */
+html[lang="ar"] {
+  direction: rtl;
+}
+
+html[lang="en"] {
+  direction: ltr;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -41,26 +50,62 @@ body {
 
 /* RTL Support */
 [dir="rtl"] {
-  direction: rtl;
-  text-align: right;
+  direction: rtl !important;
+  text-align: right !important;
 }
 
 [dir="ltr"] {
-  direction: ltr;
-  text-align: left;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 /* RTL specific styles for Material-UI components */
 [dir="rtl"] .MuiStack-root {
-  direction: rtl;
+  direction: rtl !important;
+}
+
+[dir="rtl"] .MuiBox-root {
+  direction: rtl !important;
 }
 
 [dir="rtl"] .MuiTypography-root {
-  text-align: right;
+  text-align: right !important;
+  direction: rtl !important;
 }
 
 [dir="ltr"] .MuiTypography-root {
-  text-align: left;
+  text-align: left !important;
+  direction: ltr !important;
+}
+
+[dir="rtl"] .MuiCard-root {
+  direction: rtl !important;
+}
+
+[dir="rtl"] .MuiCardContent-root {
+  direction: rtl !important;
+}
+
+[dir="rtl"] .MuiButton-root {
+  direction: rtl !important;
+}
+
+[dir="rtl"] .MuiAlert-root {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+[dir="ltr"] .MuiAlert-root {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+[dir="rtl"] .MuiContainer-root {
+  direction: rtl !important;
+}
+
+[dir="rtl"] .MuiPaper-root {
+  direction: rtl !important;
 }
 
 /* Root container */
@@ -217,17 +262,17 @@ textarea:focus {
 
 /* Enhanced RTL support for specific components */
 [dir="rtl"] .MuiButton-root {
-  direction: rtl;
+  direction: rtl !important;
 }
 
 [dir="rtl"] .MuiAlert-root {
-  direction: rtl;
-  text-align: right;
+  direction: rtl !important;
+  text-align: right !important;
 }
 
 [dir="ltr"] .MuiAlert-root {
-  direction: ltr;
-  text-align: left;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 /* Smooth transitions for language switching */
@@ -291,4 +336,268 @@ textarea:focus {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Phone number specific LTR override */
+.phone-number {
+  direction: ltr !important;
+  text-align: right !important;
+  unicode-bidi: embed;
+}
+
+[dir="rtl"] .phone-number {
+  text-align: right !important;
+}
+
+[dir="ltr"] .phone-number {
+  text-align: left !important;
+}
+
+/* Force RTL layout for Arabic */
+html[lang="ar"] * {
+  direction: rtl;
+}
+
+html[lang="ar"] .phone-number,
+html[lang="ar"] [data-phone="true"] {
+  direction: ltr !important;
+  unicode-bidi: embed;
+}
+
+/* Stack direction override for RTL */
+[dir="rtl"] .MuiStack-root[data-direction="row"] {
+  flex-direction: row-reverse !important;
+}
+
+/* Enhanced RTL button positioning */
+[dir="rtl"] .language-button {
+  order: -1;
+}
+
+[dir="ltr"] .language-button {
+  order: 1;
+}
+
+/* Additional Material-UI RTL overrides */
+[dir="rtl"] .MuiAvatar-root {
+  direction: ltr; /* Keep avatars LTR for icons */
+}
+
+[dir="rtl"] .MuiCircularProgress-root {
+  direction: ltr; /* Keep loading spinners LTR */
+}
+
+/* RTL Icon positioning */
+[dir="rtl"] .MuiSvgIcon-root {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .MuiAvatar-root .MuiSvgIcon-root {
+  transform: none; /* Don't flip icons in avatars */
+}
+
+/* Enhanced Container RTL support */
+[dir="rtl"] .MuiContainer-root {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Enhanced Alert RTL support */
+[dir="rtl"] .MuiAlert-message {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+[dir="ltr"] .MuiAlert-message {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* RTL specific margin and padding adjustments */
+[dir="rtl"] .MuiStack-root > * {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Ensure proper text direction inheritance */
+[dir="rtl"] * {
+  text-align: inherit;
+}
+
+/* Mobile specific RTL fixes */
+@media (max-width: 600px) {
+  [dir="rtl"] .MuiContainer-root {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  [dir="rtl"] .MuiStack-root {
+    direction: rtl !important;
+  }
+}
+
+/* Tablet specific RTL fixes */
+@media (max-width: 960px) {
+  [dir="rtl"] .MuiBox-root {
+    direction: rtl !important;
+  }
+}
+
+/* RTL Typography alignment fixes */
+[dir="rtl"] .MuiTypography-h1,
+[dir="rtl"] .MuiTypography-h2,
+[dir="rtl"] .MuiTypography-h3,
+[dir="rtl"] .MuiTypography-h4,
+[dir="rtl"] .MuiTypography-h5,
+[dir="rtl"] .MuiTypography-h6,
+[dir="rtl"] .MuiTypography-body1,
+[dir="rtl"] .MuiTypography-body2 {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+[dir="ltr"] .MuiTypography-h1,
+[dir="ltr"] .MuiTypography-h2,
+[dir="ltr"] .MuiTypography-h3,
+[dir="ltr"] .MuiTypography-h4,
+[dir="ltr"] .MuiTypography-h5,
+[dir="ltr"] .MuiTypography-h6,
+[dir="ltr"] .MuiTypography-body1,
+[dir="ltr"] .MuiTypography-body2 {
+  text-align: left !important;
+  direction: ltr !important;
+}
+
+/* Button group RTL support */
+[dir="rtl"] .MuiButtonGroup-root {
+  flex-direction: row-reverse;
+}
+
+/* Card actions RTL support */
+[dir="rtl"] .MuiCardActions-root {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+
+/* List item RTL support */
+[dir="rtl"] .MuiListItem-root {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+[dir="rtl"] .MuiListItemText-root {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Grid RTL support */
+[dir="rtl"] .MuiGrid-container {
+  direction: rtl !important;
+}
+
+/* Drawer RTL support */
+[dir="rtl"] .MuiDrawer-paper {
+  direction: rtl !important;
+}
+
+/* Toolbar RTL support */
+[dir="rtl"] .MuiToolbar-root {
+  direction: rtl !important;
+  justify-content: flex-start;
+}
+
+/* App Bar RTL support */
+[dir="rtl"] .MuiAppBar-root {
+  direction: rtl !important;
+}
+
+/* Menu RTL support */
+[dir="rtl"] .MuiMenu-paper {
+  direction: rtl !important;
+}
+
+[dir="rtl"] .MuiMenuItem-root {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Chip RTL support */
+[dir="rtl"] .MuiChip-root {
+  direction: rtl !important;
+}
+
+/* Badge RTL support */
+[dir="rtl"] .MuiBadge-root {
+  direction: rtl !important;
+}
+
+/* Stepper RTL support */
+[dir="rtl"] .MuiStepper-root {
+  direction: rtl !important;
+}
+
+/* Tab RTL support */
+[dir="rtl"] .MuiTabs-root {
+  direction: rtl !important;
+}
+
+[dir="rtl"] .MuiTab-root {
+  direction: rtl !important;
+}
+
+/* Pagination RTL support */
+[dir="rtl"] .MuiPagination-root {
+  direction: rtl !important;
+}
+
+/* Breadcrumbs RTL support */
+[dir="rtl"] .MuiBreadcrumbs-root {
+  direction: rtl !important;
+}
+
+/* Speed Dial RTL support */
+[dir="rtl"] .MuiSpeedDial-root {
+  direction: rtl !important;
+}
+
+/* Rating RTL support */
+[dir="rtl"] .MuiRating-root {
+  direction: rtl !important;
+}
+
+/* Switch RTL support */
+[dir="rtl"] .MuiSwitch-root {
+  direction: rtl !important;
+}
+
+/* Slider RTL support */
+[dir="rtl"] .MuiSlider-root {
+  direction: rtl !important;
+}
+
+/* Final catch-all for any missed Material-UI components */
+[dir="rtl"] [class*="Mui"]:not(.MuiSvgIcon-root):not(.MuiCircularProgress-root):not(.MuiAvatar-root *) {
+  direction: rtl !important;
+}
+
+/* Ensure proper inheritance for nested elements */
+[dir="rtl"] {
+  * {
+    direction: inherit;
+  }
+}
+
+/* Special handling for form elements */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="ltr"] input,
+[dir="ltr"] textarea,
+[dir="ltr"] select {
+  direction: ltr;
+  text-align: left;
 }
