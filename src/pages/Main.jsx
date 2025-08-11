@@ -1,178 +1,254 @@
+// src/pages/Main.jsx
 import Send from "@mui/icons-material/Send";
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
-import BackgroundImg from "../assets/BackgroundImg.png"
+import { 
+  Box, 
+  Button, 
+  Paper, 
+  Stack, 
+  Typography, 
+  Container,
+  useTheme,
+  useMediaQuery,
+  CircularProgress,
+  Alert
+} from "@mui/material";
+import React, { useState } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
+import { getTranslation } from "../utils/translations";
+import { customerService } from "../services/apiService";
+import ZainLogo from "../assets/White logo.svg"
 
-import React from "react";
+const Main = ({ onDataFetched }) => {
+  const { language, toggleLanguage } = useLanguage();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-export const Main = () => {
+  const handleInquire = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Using the test national ID from the API
+      const nationalId = "2000264514";
+      const response = await customerService.getCustomerLines(nationalId);
+      
+      if (response.status === 0 && response.data) {
+        onDataFetched(response.data);
+      } else {
+        setError(response.message || getTranslation('error', language));
+      }
+    } catch (err) {
+      setError(err.message || getTranslation('error', language));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const containerWidth = isMobile ? "100%" : isTablet ? "500px" : "402px";
+  const containerHeight = isMobile ? "auto" : "874px";
+
   return (
-    <Box
+    <Container
+      maxWidth={false}
       sx={{
-          backgroundPosition: "50% 50%",        display: "grid",
-        justifyItems: "center",
-        alignItems: "start",
-     
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: isMobile ? "flex-start" : "center",
+        padding: isMobile ? "16px" : "0",
+        background: 'transparent',
       }}
     >
       <Box
         sx={{
-       
-          width: "402px",
-          height: "874px",
+          width: containerWidth,
+          height: containerHeight,
           position: "relative",
+          maxWidth: "100%",
         }}
       >
+        {/* Header */}
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
           sx={{
-            width: "370px",
-            position: "absolute",
-            top: "18px",
-            left: "16px",
+            width: "100%",
+            position: "relative",
+            top: isMobile ? "0" : "18px",
+            px: isMobile ? "0" : "16px",
+            mb: isMobile ? "20px" : "0",
           }}
         >
-          <Box sx={{ position: "relative", width: "133.33px", height: "35px" }}>
-            <Box
-              component="img"
-              src="https://via.placeholder.com/93x33/ffffff/000000?text=ZAIN"
-              alt="Zain Logo"
-              sx={{
-                width: "93px",
-                height: "33px",
-                position: "absolute",
-                top: 0,
-                left: "40px",
-              }}
-            />
-            <Box
-              component="img"
-              src="https://via.placeholder.com/35x33/ffffff/000000?text=LOGO"
-              alt="Logo Icon"
-              sx={{
-                width: "35px",
-                height: "33px",
-                position: "absolute",
-                top: "2px",
-                left: 0,
-              }}
-            />
+          {/* Logo Section */}
+          <Box sx={{ 
+            position: "relative", 
+            width: isMobile ? "120px" : "133.33px", 
+            height: "35px" 
+          }}>
+                   <Box
+                         component="img"
+                         src={ZainLogo}
+                         alt="Zain Logo"
+                         sx={{
+                           width: isMobile ? "80px" : "93px",
+                           height: "33px",
+                           position: "absolute",
+                           top: 0,
+                         }}
+                       />
           </Box>
 
+          {/* Language Button */}
           <Button
             variant="contained"
+            onClick={toggleLanguage}
             sx={{
               height: "34px",
               backgroundColor: "#20397e",
               border: "0.42px solid #6982c7",
               borderRadius: "5px",
-              px: "15px",
+              px: isMobile ? "10px" : "15px",
               py: "5px",
               minWidth: "auto",
+              fontSize: isMobile ? "11px" : "13px",
+              "&:hover": {
+                backgroundColor: "#1c3781",
+              },
             }}
           >
             <Typography
-              variant="h3"
+              variant="h4"
               sx={{
-                fontFamily: "'Zain-Bold', Helvetica",
+                fontFamily: "'Zain', Arial",
                 fontWeight: "bold",
                 color: "white",
-                fontSize: "13px",
-                direction: "rtl",
+                fontSize: isMobile ? "11px" : "13px",
               }}
             >
-              العربية
+              {getTranslation('languageButton', language)}
             </Typography>
           </Button>
         </Stack>
 
+        {/* Main Content */}
         <Stack
           spacing={2.5}
           sx={{
-            width: "370px",
-            position: "absolute",
-            top: "73px",
-            left: "16px",
+            width: "100%",
+            position: "relative",
+            top: isMobile ? "0" : "73px",
+            px: isMobile ? "0" : "16px",
           }}
         >
+          {/* Info Card */}
           <Paper
             sx={{
               backgroundColor: "#1c3781",
               borderRadius: "8px",
-              px: "27px",
-              py: "25px",
+              px: isMobile ? "20px" : "27px",
+              py: isMobile ? "20px" : "25px",
             }}
           >
             <Typography
               variant="h1"
               sx={{
-                fontFamily: "'Zain-Bold', Helvetica",
+                fontFamily: "'Zain', Arial",
                 fontWeight: "bold",
-                fontSize: "19px",
-                lineHeight: "30px",
+                fontSize: isMobile ? "16px" : "19px",
+                lineHeight: isMobile ? "24px" : "30px",
                 color: "white",
-                marginTop: "-1px",
+                textAlign: language === 'ar' ? 'right' : 'left',
+                whiteSpace: 'pre-line',
               }}
             >
-              Dear Customer ,<br />
-              <br />
-              Please press "inquire" button below to display all MSISDNs
-              associated under your national ID number.
-              <br />
-              <br />
-              Please note that this list is tied to your national number, please
-              don't share this page ot link with anyone
+              {getTranslation('title', language)}
+              {'\n\n'}
+              {getTranslation('description', language)}
             </Typography>
           </Paper>
 
+          {/* Error Alert */}
+          {error && (
+            <Alert 
+              severity="error" 
+              sx={{ 
+                direction: language === 'ar' ? 'rtl' : 'ltr',
+                textAlign: language === 'ar' ? 'right' : 'left',
+              }}
+            >
+              {error}
+            </Alert>
+          )}
+
+          {/* Inquire Button */}
           <Button
             variant="contained"
+            onClick={handleInquire}
+            disabled={loading}
             sx={{
               backgroundColor: "#cf0072",
               borderRadius: "5px",
               px: "15px",
-              py: "16px",
+              py: isMobile ? "14px" : "16px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
               "&:hover": {
-                backgroundColor: "#cf0072",
+                backgroundColor: "#b8005f",
+              },
+              "&:disabled": {
+                backgroundColor: "#cf007280",
               },
             }}
           >
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: "'Zain-Bold', Helvetica",
-                fontWeight: "bold",
-                fontSize: "18px",
-                color: "white",
-                textAlign: "right",
-                marginTop: "-0.42px",
-              }}
-            >
-              Inquire
-            </Typography>
-            <Send sx={{ width: "24px", height: "24px", color: "white" }} />
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              <>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontFamily: "'Zain', Arial",
+                    fontWeight: "bold",
+                    fontSize: isMobile ? "16px" : "18px",
+                    color: "white",
+                    textAlign: "center",
+                  }}
+                >
+                  {getTranslation('inquireButton', language)}
+                </Typography>
+                <Send sx={{ 
+                  width: "24px", 
+                  height: "24px", 
+                  color: "white",
+                  transform: language === 'ar' ? 'scaleX(-1)' : 'none',
+                }} />
+              </>
+            )}
           </Button>
 
+          {/* Expiry Note */}
           <Typography
             variant="body1"
             sx={{
-              fontFamily: "'Zain-Regular', Helvetica",
+              fontFamily: "'Zain', Arial",
               fontWeight: "normal",
-              fontSize: "19px",
+              fontSize: isMobile ? "16px" : "19px",
               color: "white",
+              textAlign: language === 'ar' ? 'right' : 'left',
+              px: isMobile ? "10px" : "0",
             }}
           >
-            Please note that this page will expired in 7 days from receiving the
-            link SMS
+            {getTranslation('expireNote', language)}
           </Typography>
         </Stack>
       </Box>
-    </Box>
+    </Container>
   );
 };
 

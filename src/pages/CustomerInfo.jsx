@@ -1,7 +1,14 @@
+// src/pages/CustomerInfo.jsx
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import LanguageIcon from "@mui/icons-material/Language";
-import BackgroundImg from "../assets/BackgroundImg.png"
+import SignalCellular4BarIcon from "@mui/icons-material/SignalCellular4Bar";
+import ZainLogo from "../assets/White logo.svg"
+import ZainGSM from "../assets/ZainGSMLogo.svg"
+import Zain4G from "../assets/4g_mobiledata.svg"
+import Zain5G from "../assets/5g_black.svg"
+import ZainFtth from "../assets/Ftth_black.svg"
+import WifiIcon from "@mui/icons-material/Wifi";
 import {
   Avatar,
   Box,
@@ -10,307 +17,392 @@ import {
   CardContent,
   Stack,
   Typography,
+  Container,
+  useTheme,
+  useMediaQuery,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
+import { getTranslation } from "../utils/translations";
+import { generateAdvancedPDF } from "../services/pdfService";
 
-const serviceData = [
-  {
-    id: 1,
-    type: "Broadband Internet",
-    number: "0798765432",
-    icon: "4G",
-    subtitle: null,
-  },
-  {
-    id: 2,
-    type: "Mobile",
-    number: "0798765432",
-    icon: "mobile",
-    subtitle: "Prepaid",
-  },
-  {
-    id: 3,
-    type: "Broadband Internet",
-    number: "0798765432",
-    icon: "5G",
-    subtitle: null,
-  },
-  {
-    id: 4,
-    type: "Fiber",
-    number: "0798765432",
-    icon: "fiber",
-    subtitle: null,
-  },
-  {
-    id: 5,
-    type: "Mobile",
-    number: "0798765432",
-    icon: "mobile",
-    subtitle: "Postpaid",
-  },
-];
+const getServiceIcon = (market, contractType, language) => {
+  const marketEn = typeof market === 'string' ? market : market?.eN_Market || 'Mobile';
+  const contractEn = typeof contractType === 'string' ? contractType : contractType?.eN_ContractType || 'PREPAID';
 
-const getServiceIcon = (iconType) => {
-  switch (iconType) {
-    case "4G":
-      return (
-        <Typography
-          sx={{ color: "white", fontSize: "14px", fontWeight: "bold" }}
-        >
-          4G
-        </Typography>
-      );
-    case "5G":
-      return (
-        <Typography
-          sx={{ color: "white", fontSize: "14px", fontWeight: "bold" }}
-        >
-          5G
-        </Typography>
-      );
-    case "fiber":
-      return <FlashOnIcon sx={{ color: "white", fontSize: "24px" }} />;
-    case "mobile":
-      return <LanguageIcon sx={{ color: "white", fontSize: "24px" }} />;
-    default:
-      return (
-        <Typography
-          sx={{ color: "white", fontSize: "14px", fontWeight: "bold" }}
-        >
-          4G
-        </Typography>
-      );
+  // Determine icon based on market type
+  if (marketEn.toLowerCase().includes('broadband') || marketEn.toLowerCase().includes('internet')) {
+    if (contractEn === 'BLINE') {
+      return <WifiIcon sx={{ color: "white", fontSize: "24px" }} />;
+    }
+    return (
+        <img src={Zain4G} alt="" srcset="" />
+     
+    );
   }
+  
+  if (marketEn.toLowerCase().includes('fiber')) {
+    return         <img src={ZainFtth} alt="" srcset="" />
+  }
+  
+  // Mobile services
+  if (contractEn === 'BLINE') {
+    return (
+      <img src={Zain5G} alt="" srcset="" />
+    );
+  }
+  
+  return <img src={ZainGSM} sx={{ color: "white", fontSize: "20px" }} />;
 };
 
-export const List = () => {
+const getContractTypeDisplay = (contractType, language) => {
+  if (typeof contractType === 'object') {
+    return language === 'ar' ? contractType.aR_ContractType : contractType.eN_ContractType;
+  }
+  
+  // Handle string values from API
+  const contractMap = {
+    'PREPAID': { en: 'Prepaid', ar: 'بطاقات مدفوعة مسبقاً' },
+    'POSTPAID': { en: 'Postpaid', ar: ' ' },
+    'BLINE': { en: '', ar: '' },
+  };
+  
+  const mapped = contractMap[contractType?.toUpperCase()];
+  return mapped ? (language === 'ar' ? mapped.ar : mapped.en) : contractType;
+};
+
+const getMarketTypeDisplay = (market, language) => {
+  if (typeof market === 'object') {
+    return language === 'ar' ? market.aR_Market : market.eN_Market;
+  }
+  
+  // Handle string values from API
+  const marketMap = {
+    'Mobile': { en: 'Mobile', ar: 'خط مكالمات' },
+    'Broadband Internet': { en: 'Broadband Internet', ar: 'انترنت برودباند' },
+    'Fiber': { en: 'Fiber', ar: 'ألياف ضوئية' },
+  };
+  
+  const mapped = marketMap[market];
+  return mapped ? (language === 'ar' ? mapped.ar : mapped.en) : market;
+};
+
+export const CustomerInfo = ({ data, onBack }) => {
+  const { language, toggleLanguage } = useLanguage();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [pdfError, setPdfError] = useState(null);
+
+  const handleDownloadPDF = async () => {
+    setDownloadingPdf(true);
+    setPdfError(null);
+    
+    try {
+      await generateAdvancedPDF(data, language);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      setPdfError(getTranslation('error', language));
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
+  const containerWidth = isMobile ? "100%" : isTablet ? "500px" : "402px";
+
   return (
-    <Box
+    <Container
+      maxWidth={false}
       sx={{
         minHeight: "100vh",
-        background: `url(${BackgroundImg})`,
         display: "flex",
         justifyContent: "center",
-        alignItems: "flex-start",
-        padding: 0,
+        alignItems: isMobile ? "flex-start" : "center",
+        padding: isMobile ? "16px" : "0",
+        background: 'transparent',
       }}
     >
       <Box
+        id="customer-lines-content"
         sx={{
-          width: "402px",
-          height: "874px",
+          width: containerWidth,
           position: "relative",
-          backgroundImage: "url(/list.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "50% 50%",
+          maxWidth: "100%",
         }}
       >
+        {/* Header */}
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
           sx={{
-            position: "absolute",
-            top: "18px",
-            left: "16px",
-            width: "370px",
+            width: "100%",
+            position: "relative",
+            mb: "20px",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              position: "relative",
-              width: "133.33px",
-              height: "35px",
-            }}
-          >
+          {/* Logo Section */}
+          <Box sx={{ 
+            position: "relative", 
+            width: isMobile ? "120px" : "133.33px", 
+            height: "35px" 
+          }}>
             <Box
               component="img"
-              src="/fill-3.svg"
-              alt="Fill"
+              src={ZainLogo}
+              alt="Zain Logo"
               sx={{
-                width: "35px",
-                height: "33px",
-                position: "absolute",
-                top: "2px",
-                left: 0,
-              }}
-            />
-            <Box
-              component="img"
-              src="/fill-1.svg"
-              alt="Fill"
-              sx={{
-                width: "93px",
+                width: isMobile ? "80px" : "93px",
                 height: "33px",
                 position: "absolute",
                 top: 0,
-                left: "40px",
+                left: language === 'ar' ? "0" : isMobile ? "10px" : "40px",
+                right: language === 'ar' ? isMobile ? "20px" : "30px" : "auto",
               }}
             />
+        
           </Box>
 
+          {/* Language Button */}
           <Button
             variant="contained"
+            onClick={toggleLanguage}
             sx={{
+              height: "34px",
               backgroundColor: "#20397e",
               border: "0.42px solid #6982c7",
               borderRadius: "5px",
-              padding: "5px 15px",
-              height: "34px",
-              fontSize: "13px",
-              fontFamily: "'Zain-Bold', Helvetica",
-              fontWeight: "bold",
-              color: "white",
-              textTransform: "none",
-              direction: "rtl",
+              px: isMobile ? "10px" : "15px",
+              py: "5px",
+              minWidth: "auto",
+              fontSize: isMobile ? "11px" : "13px",
               "&:hover": {
-                backgroundColor: "#20397e",
+                backgroundColor: "#1c3781",
               },
-            }}
-          >
-            العربية
-          </Button>
-        </Stack>
-
-        <Stack
-          spacing={2}
-          sx={{
-            position: "absolute",
-            top: "73px",
-            left: "16px",
-            width: "370px",
-          }}
-        >
-          <Card
-            sx={{
-              backgroundColor: "#1c3781",
-              borderRadius: "8px",
-              padding: "18px 16px 20px 22px",
             }}
           >
             <Typography
               sx={{
-                fontSize: "19px",
-                fontFamily: "'Zain-Bold', Helvetica",
+                fontFamily: "'Zain', Arial",
+                fontWeight: "bold",
+                color: "white",
+                fontSize: isMobile ? "11px" : "13px",
+              }}
+            >
+              {getTranslation('languageButton', language)}
+            </Typography>
+          </Button>
+        </Stack>
+
+        {/* Content */}
+        <Stack spacing={2}>
+          {/* Title Card */}
+          <Card
+            sx={{
+              backgroundColor: "#1c3781",
+              borderRadius: "8px",
+              padding: isMobile ? "16px" : "18px 16px 20px 22px",
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: isMobile ? "16px" : "19px",
+                fontFamily: "'Zain', Arial",
                 fontWeight: "bold",
                 color: "white",
                 letterSpacing: 0,
                 lineHeight: "normal",
+                textAlign: language === 'ar' ? 'right' : 'left',
               }}
             >
-              You have the below numbers register under your national number
+              {getTranslation('registeredNumbers', language)}
             </Typography>
           </Card>
 
-          {serviceData.map((service) => (
-            <Card
-              key={service.id}
-              sx={{
-                backgroundColor: "white",
-                borderRadius: "8px",
-                padding: "16px 16px 16px 18px",
-                cursor: "pointer",
-                "&:hover": {
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                },
-              }}
-            >
-              <CardContent
-                sx={{ padding: 0, "&:last-child": { paddingBottom: 0 } }}
+          {/* Services List */}
+          {data && data.length > 0 ? (
+            data.map((service, index) => (
+              <Card
+                key={`${service.msisdn}-${index}`}
+                sx={{
+                  backgroundColor: "white",
+                  borderRadius: "8px",
+                  padding: isMobile ? "14px" : "16px 16px 16px 18px",
+                  cursor: "pointer",
+                  "&:hover": {
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  },
+                }}
               >
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
+                <CardContent
+                  sx={{ padding: 0, "&:last-child": { paddingBottom: 0 } }}
                 >
-                  <Stack spacing={0.5} sx={{ flex: 1 }}>
-                    <Typography
-                      sx={{
-                        fontSize: "16px",
-                        fontFamily: "'Nunito Sans-Regular', Helvetica",
-                        fontWeight: 400,
-                        color: "#000000b2",
-                        letterSpacing: 0,
-                        lineHeight: "normal",
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{
+                      direction: language === 'ar' ? 'rtl' : 'ltr',
+                    }}
+                  >
+                    <Stack 
+                      spacing={0.5} 
+                      sx={{ 
+                        flex: 1,
+                        textAlign: language === 'ar' ? 'right' : 'left',
                       }}
                     >
-                      {service.type}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        fontSize: "23px",
-                        fontFamily: "'Zain-Bold', Helvetica",
-                        fontWeight: "bold",
-                        color: "black",
-                        letterSpacing: 0,
-                        lineHeight: "normal",
-                      }}
-                    >
-                      {service.number}
-                    </Typography>
-
-                    {service.subtitle && (
                       <Typography
                         sx={{
-                          fontSize: "16px",
-                          fontFamily: "'Nunito Sans-Medium', Helvetica",
+                          fontSize: isMobile ? "14px" : "16px",
+                          fontFamily: "'Zain', Arial",
+                          fontWeight: 400,
+                          color: "#000000b2",
+                          letterSpacing: 0,
+                          lineHeight: "normal",
+                        }}
+                      >
+                        {getMarketTypeDisplay(service, language)}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          fontSize: isMobile ? "20px" : "23px",
+                          fontFamily: "'Zain', Arial",
+                          fontWeight: "bold",
+                          color: "black",
+                          letterSpacing: 0,
+                          lineHeight: "normal",
+                          direction: 'ltr',
+                          textAlign: language === 'ar' ? 'right' : 'left',
+                        }}
+                      >
+                        {service.msisdn}
+                      </Typography>
+                      {console.log(service.eN_ContractType)
+                      }
+{service?.eN_ContractType=="PREPAID" || service?.eN_ContractType=="POSTPAID"?
+
+<Typography
+                        sx={{
+                          fontSize: isMobile ? "14px" : "16px",
+                          fontFamily: "'Zain', Arial",
                           fontWeight: 500,
                           color: "black",
                           letterSpacing: 0,
                           lineHeight: "normal",
                         }}
                       >
-                        {service.subtitle}
+                        {getContractTypeDisplay(service, language)}
                       </Typography>
-                    )}
-                  </Stack>
+:""}
+                      
+                    </Stack>
 
-                  <Avatar
+                    <Avatar
+                      sx={{
+                        width: isMobile ? "44px" : "49px",
+                        height: isMobile ? "44px" : "49px",
+                        backgroundColor: "#3e579c",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginLeft: language === 'ar' ? 0 : 2,
+                        marginRight: language === 'ar' ? 2 : 0,
+                      }}
+                    >
+                      {getServiceIcon(service, service, language)}
+                    </Avatar>
+                  </Stack>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Alert severity="info" sx={{ textAlign: language === 'ar' ? 'right' : 'left' }}>
+              {getTranslation('noData', language)}
+            </Alert>
+          )}
+
+          {/* PDF Error */}
+          {pdfError && (
+            <Alert severity="error" sx={{ textAlign: language === 'ar' ? 'right' : 'left' }}>
+              {pdfError}
+            </Alert>
+          )}
+
+          {/* Action Buttons */}
+          <Stack spacing={2}>
+            {/* Download PDF Button */}
+            <Button
+              variant="contained"
+              onClick={handleDownloadPDF}
+              disabled={downloadingPdf || !data || data.length === 0}
+              sx={{
+                backgroundColor: "#cf0072",
+                borderRadius: "5px",
+                padding: isMobile ? "12px 15px" : "13px 15px",
+                fontSize: isMobile ? "15px" : "17px",
+                fontFamily: "'Zain', Arial",
+                fontWeight: "bold",
+                color: "white",
+                textTransform: "none",
+                textAlign: "center",
+                gap: "8px",
+                direction: language === 'ar' ? 'rtl' : 'ltr',
+                "&:hover": {
+                  backgroundColor: "#b8005f",
+                },
+                "&:disabled": {
+                  backgroundColor: "#cf007280",
+                },
+              }}
+            >
+              {downloadingPdf ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <>
+                  <Typography
                     sx={{
-                      width: "49px",
-                      height: "49px",
-                      backgroundColor: "#3e579c",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      fontSize: isMobile ? "15px" : "17px",
+                      fontFamily: "'Zain', Arial",
+                      fontWeight: "bold",
+                      color: "white",
                     }}
                   >
-                    {getServiceIcon(service.icon)}
-                  </Avatar>
-                </Stack>
-              </CardContent>
-            </Card>
-          ))}
+                    {getTranslation('downloadPDF', language)}
+                  </Typography>
+                  <FileDownloadIcon sx={{ width: "24px", height: "24px" }} />
+                </>
+              )}
+            </Button>
 
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#cf0072",
-              borderRadius: "5px",
-              padding: "13px 15px",
-              fontSize: "17px",
-              fontFamily: "'Zain-Bold', Helvetica",
-              fontWeight: "bold",
-              color: "white",
-              textTransform: "none",
-              textAlign: "right",
-              gap: "4.24px",
-              "&:hover": {
-                backgroundColor: "#cf0072",
-              },
-            }}
-            endIcon={
-              <FileDownloadIcon sx={{ width: "24px", height: "24px" }} />
-            }
-          >
-            Download as PDF
-          </Button>
+            {/* Back Button */}
+            <Button
+              variant="outlined"
+              onClick={onBack}
+              sx={{
+                borderColor: "#1c3781",
+                color: "#1c3781",
+                borderRadius: "5px",
+                padding: isMobile ? "12px 15px" : "13px 15px",
+                fontSize: isMobile ? "15px" : "17px",
+                fontFamily: "'Zain', Arial",
+                fontWeight: "bold",
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "#1c378110",
+                  borderColor: "#1c3781",
+                },
+              }}
+            >
+              {language === 'ar' ? 'العودة' : 'Back'}
+            </Button>
+          </Stack>
         </Stack>
       </Box>
-    </Box>
+    </Container>
   );
 };

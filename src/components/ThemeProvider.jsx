@@ -1,11 +1,30 @@
+// src/components/ThemeProvider.jsx
 import {
   CssBaseline,
   ThemeProvider as MuiThemeProvider,
   createTheme,
 } from "@mui/material";
+import { createTheme as createMuiTheme } from '@mui/material/styles';
+import { prefixer } from 'stylis';
+import rtlPlugin from 'stylis-plugin-rtl';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
 import React from "react";
+import { useLanguage } from '../contexts/LanguageContext';
 
-const appTheme = createTheme({
+// Create RTL cache
+const cacheRtl = createCache({
+  key: 'muirtl',
+  stylisPlugins: [prefixer, rtlPlugin],
+});
+
+const cacheLtr = createCache({
+  key: 'muiltr',
+  stylisPlugins: [prefixer],
+});
+
+const createAppTheme = (language) => createMuiTheme({
+  direction: language === 'ar' ? 'rtl' : 'ltr',
   palette: {
     primary: {
       main: "#1c3781",
@@ -33,54 +52,62 @@ const appTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: "'Nunito Sans', 'Zain', Helvetica, Arial, sans-serif",
+    fontFamily: language === 'ar' 
+      ? "'Zain', 'Arial', sans-serif" 
+      : "'Nunito Sans', 'Zain', Helvetica, Arial, sans-serif",
     h1: {
       fontSize: "19px",
       fontWeight: 700,
-      fontFamily: "'Zain-Bold', Helvetica",
+      fontFamily: language === 'ar' ? "'Zain', Arial" : "'Zain-Bold', Helvetica",
       color: "#ffffff",
       letterSpacing: "0",
       lineHeight: "normal",
+      textAlign: language === 'ar' ? 'right' : 'left',
     },
     h2: {
       fontSize: "23px",
       fontWeight: 700,
-      fontFamily: "'Zain-Bold', Helvetica",
+      fontFamily: language === 'ar' ? "'Zain', Arial" : "'Zain-Bold', Helvetica",
       color: "#000000",
       letterSpacing: "0",
       lineHeight: "normal",
+      textAlign: language === 'ar' ? 'right' : 'left',
     },
     h3: {
       fontSize: "17px",
       fontWeight: 700,
-      fontFamily: "'Zain-Bold', Helvetica",
+      fontFamily: language === 'ar' ? "'Zain', Arial" : "'Zain-Bold', Helvetica",
       color: "#ffffff",
       letterSpacing: "0",
       lineHeight: "normal",
+      textAlign: language === 'ar' ? 'right' : 'left',
     },
     h4: {
       fontSize: "13px",
       fontWeight: 700,
-      fontFamily: "'Zain-Bold', Helvetica",
+      fontFamily: language === 'ar' ? "'Zain', Arial" : "'Zain-Bold', Helvetica",
       color: "#ffffff",
       letterSpacing: "0",
       lineHeight: "normal",
+      textAlign: language === 'ar' ? 'right' : 'left',
     },
     body1: {
       fontSize: "16px",
       fontWeight: 400,
-      fontFamily: "'Nunito Sans-Regular', Helvetica",
+      fontFamily: language === 'ar' ? "'Zain', Arial" : "'Nunito Sans-Regular', Helvetica",
       color: "#000000b2",
       letterSpacing: "0",
       lineHeight: "normal",
+      textAlign: language === 'ar' ? 'right' : 'left',
     },
     body2: {
       fontSize: "16px",
       fontWeight: 500,
-      fontFamily: "'Nunito Sans-Medium', Helvetica",
+      fontFamily: language === 'ar' ? "'Zain', Arial" : "'Nunito Sans-Medium', Helvetica",
       color: "#000000",
       letterSpacing: "0",
       lineHeight: "normal",
+      textAlign: language === 'ar' ? 'right' : 'left',
     },
   },
   components: {
@@ -89,6 +116,7 @@ const appTheme = createTheme({
         root: {
           textTransform: "none",
           borderRadius: "5px",
+          fontFamily: language === 'ar' ? "'Zain', Arial" : "'Zain-Bold', Helvetica",
         },
       },
     },
@@ -110,14 +138,45 @@ const appTheme = createTheme({
         }),
       },
     },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          '@media (max-width: 600px)': {
+            paddingLeft: '8px',
+            paddingRight: '8px',
+          },
+        },
+      },
+    },
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
   },
 });
 
 export const ThemeProvider = ({ children }) => {
+  const { language } = useLanguage();
+  const theme = createAppTheme(language);
+  const isRtl = language === 'ar';
+
+  // Set document direction
+  React.useEffect(() => {
+    document.dir = isRtl ? 'rtl' : 'ltr';
+    document.documentElement.setAttribute('lang', language);
+  }, [isRtl, language]);
+
   return (
-    <MuiThemeProvider theme={appTheme}>
-      <CssBaseline />
-      {children}
-    </MuiThemeProvider>
+    <CacheProvider value={isRtl ? cacheRtl : cacheLtr}>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
+    </CacheProvider>
   );
 };
