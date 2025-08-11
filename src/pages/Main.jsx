@@ -60,6 +60,7 @@ const Main = ({ onDataFetched }) => {
         alignItems: isMobile ? "flex-start" : "center",
         padding: isMobile ? "16px" : "0",
         background: 'transparent',
+        direction: language === 'ar' ? 'rtl' : 'ltr',
       }}
     >
       <Box
@@ -89,17 +90,18 @@ const Main = ({ onDataFetched }) => {
             width: isMobile ? "120px" : "133.33px", 
             height: "35px" 
           }}>
-                   <Box
-                         component="img"
-                         src={ZainLogo}
-                         alt="Zain Logo"
-                         sx={{
-                           width: isMobile ? "80px" : "93px",
-                           height: "33px",
-                           position: "absolute",
-                           top: 0,
-                         }}
-                       />
+            <Box
+              component="img"
+              src={ZainLogo}
+              alt="Zain Logo"
+              sx={{
+                width: isMobile ? "80px" : "93px",
+                height: "33px",
+                position: "absolute",
+                top: 0,
+                [language === 'ar' ? 'right' : 'left']: 0,
+              }}
+            />
           </Box>
 
           {/* Language Button */}
@@ -142,6 +144,7 @@ const Main = ({ onDataFetched }) => {
             position: "relative",
             top: isMobile ? "0" : "73px",
             px: isMobile ? "0" : "16px",
+            direction: language === 'ar' ? 'rtl' : 'ltr',
           }}
         >
           {/* Info Card */}
@@ -163,6 +166,7 @@ const Main = ({ onDataFetched }) => {
                 color: "white",
                 textAlign: language === 'ar' ? 'right' : 'left',
                 whiteSpace: 'pre-line',
+                direction: language === 'ar' ? 'rtl' : 'ltr',
               }}
             >
               {getTranslation('title', language)}
@@ -178,6 +182,10 @@ const Main = ({ onDataFetched }) => {
               sx={{ 
                 direction: language === 'ar' ? 'rtl' : 'ltr',
                 textAlign: language === 'ar' ? 'right' : 'left',
+                '& .MuiAlert-message': {
+                  direction: language === 'ar' ? 'rtl' : 'ltr',
+                  textAlign: language === 'ar' ? 'right' : 'left',
+                }
               }}
             >
               {error}
@@ -198,6 +206,7 @@ const Main = ({ onDataFetched }) => {
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
+              direction: language === 'ar' ? 'rtl' : 'ltr',
               "&:hover": {
                 backgroundColor: "#b8005f",
               },
@@ -242,6 +251,7 @@ const Main = ({ onDataFetched }) => {
               color: "white",
               textAlign: language === 'ar' ? 'right' : 'left',
               px: isMobile ? "10px" : "0",
+              direction: language === 'ar' ? 'rtl' : 'ltr',
             }}
           >
             {getTranslation('expireNote', language)}

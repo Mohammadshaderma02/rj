@@ -24,7 +24,7 @@ export const translations = {
     inquireButton: "استعلام",
     expireNote: "يرجى ملاحظة أن هذه الصفحة ستنتهي صلاحيتها خلال 7 أيام من استلام رسالة الرابط",
     registeredNumbers: "لديك الأرقام التالية مسجلة تحت رقمك الوطني",
-    downloadPDF: "تحميل كـ PDF",
+    downloadPDF: "تحميل بصيغة PDF",
     mobile: "خط مكالمات",
     broadband: "انترنت برودباند",
     fiber: "ألياف ضوئية",
